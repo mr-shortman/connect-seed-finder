@@ -1,11 +1,21 @@
 version: "3"
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
-      - "3000:3000"
+      "3000:3000"
     environment:
-      - NODE_ENV=production
-    volumes:
-      - ./app:/usr/src/app
+      NODE_ENV=production
     command: npm start
+    labels:      
+      "traefik.enable=true"
+      "traefik.http.routers.pocketbase.rule=Host(pocketbase.shortman.me)"
+      "traefik.http.routers.pocketbase.tls=true"
+      "traefik.http.routers.pocketbase.tls.certresolver=myresolver"
+      "traefik.http.routers.pocketbase.entrypoints=websecure"
+networks:
+  default:
+    name: webproxy
+    external: true
